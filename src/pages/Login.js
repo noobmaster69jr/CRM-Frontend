@@ -1,11 +1,38 @@
 import { useState } from "react";
 import { DropdownButton, Dropdown } from "react-bootstrap";
+import { userSignin, userSignup } from "../api/auth";
+
 
 // signup : userid, username, email, password
 // login: userid, password
+
+
+/*
+POST API 
+1. Grab the data 
+2. Store the data 
+3. Call the api */
+
 function Login() {
   const [showSignup, setShowSignup] = useState(false);
   const [userType, setUserType] = useState("CUSTOMER");
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+
+
+  const updateData = (e)=>{
+    if(e.target.id === "userid"){
+      setUserId(e.target.value)
+    }else if(e.target.id === "password"){
+      setPassword(e.target.value)
+    }else if(e.target.id === "email"){
+      setEmail(e.target.value)
+    }else if(e.target.id === "username"){
+      setUsername(e.target.value)
+    }
+  }
 
   const toggleSignup = () => {
     setShowSignup(!showSignup);
@@ -14,6 +41,55 @@ function Login() {
   const handleSelect = (e) => {
     setUserType(e);
   };
+
+  const signinFn = (e)=>{
+    e.preventDefault()
+    
+    const data = {
+      userId: userId,
+      password: password
+    }
+    
+    userSignin(data).then((response) => {
+      localStorage.setItem("name", response.data.name);
+      localStorage.setItem("userId", response.data.userId);
+      localStorage.setItem("email", response.data.email);
+      localStorage.setItem("userTypes", response.data.userTypes);
+      localStorage.setItem("userStatus", response.data.userStatus);
+      localStorage.setItem("token", response.data.accessToken);
+      
+      if (response.data.userTypes === "CUSTOMER")
+        window.location.href = "/customer";
+      else if (response.data.userTypes === "ENGINEER")
+        window.location.href = "/engineer";
+      else if (response.data.userTypes === "ADMIN")
+        window.location.href = "/admin";
+      else window.location.href = "/";
+
+    
+     
+    }).catch ((err) => {
+      console.log(err)
+    })
+
+  }
+
+  const signupFn = (e) =>{
+    e.preventDefault()
+
+    const data = {
+      userId: userId, 
+      password: password,
+      name: username,
+      userType: userType,
+      email: email
+    }
+
+     userSignup(data).then((response) => console.log(response)).catch((err) =>{
+      console.log(err)
+     })
+  }
+
   return (
     <div className="bg-info d-flex justify-content-center align-items-center vh-100 ">
       <div
@@ -24,12 +100,15 @@ function Login() {
           {showSignup ? "Sign Up" : "Log In"}
         </h4>
 
-        <form>
+        <form onSubmit={showSignup ? signupFn : signinFn}>
           <div className="input-group">
             <input
               type="text"
               className="form-control m-1"
               placeholder="User Id"
+              value={userId}
+              id="userid"
+              onChange={updateData}
             />
           </div>
           {showSignup && (
@@ -39,6 +118,9 @@ function Login() {
                   type="text"
                   className="form-control m-1"
                   placeholder="Username"
+                  value={username}
+                  id="username"
+                  onChange={updateData}
                 />
               </div>
               <div className="input-group">
@@ -46,10 +128,13 @@ function Login() {
                   type="email"
                   className="form-control m-1"
                   placeholder="Email"
+                  value={email}
+                  id="email"
+                  onChange={updateData}
                 />
               </div>
               <div className="d-flex justify-content-between m-1">
-                <span className="my-1">User Type</span>
+                <span className="my-1">User Types</span>
                 <DropdownButton
                   align="end"
                   title={userType}
@@ -68,6 +153,9 @@ function Login() {
               type="password"
               className="form-control m-1"
               placeholder="Password"
+              value={password}
+              id="password"
+              onChange={updateData}
             />
           </div>
 
