@@ -9,9 +9,9 @@ const Sidebar = ()=>{
       <>
         <CSidebar unfoldable className="vh-100 bg-black">
           <CSidebarNav>
-            <CNavItem>
+            <CNavItem className="d-flex">
               <i className="bi bi-bar-chart-fill text-white mx-3 my-2"></i>
-              <span className="text-white fw-bolder mx-3 my-2">TETHERX</span>
+              <h4 className="text-white fw-bolder mx-3 my-2">TETHERX</h4>
             </CNavItem>
             <CNavTitle className="text-light fw-normal">
               A CRM app for all your needs..
