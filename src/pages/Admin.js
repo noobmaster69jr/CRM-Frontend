@@ -39,7 +39,15 @@ const userColumns = [
   { title: "NAME", field: "name" },
   { title: "EMAIL", field: "email" },
   { title: "ROLE", field: "userTypes" },
-  { title: "STATUS", field: "status" },
+  {
+    title: "STATUS",
+    field: "status",
+    lookup: {
+      APPROVED: "APPROVED",
+      REJECTED: "REJECTED",
+      PENDING: "PENDING",
+    },
+  },
 ];
 
 
@@ -49,6 +57,15 @@ function Admin() {
   const [ticketStatusCount, setTicketStatusCount] = useState({});
   const [ticketUpdationModal, setTicketUpdationModal] = useState(false);
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
+
+  // get api and stor the data
+  const [userDetails, setUserDetails] = useState([]);
+  // open and close user modal
+  const [userUpdationModal, setUserUpdationModal] = useState(false);
+  // store the curr user details and the updated user details
+  const [selectedCurrUser, setSelectedCurrUser] = useState({});
+
+  const [message, setMessage] = useState("");
 
   const updateSelectedCurrTicket = (data) => setSelectedCurrTicket(data);
 
@@ -65,7 +82,7 @@ function Admin() {
         setTicketDetails(response.data);
         updateTicketCount(response.data);
       })
-      .catch((err) => console.log(err));
+      .catch((error) => setMessage(error.response.data.message));
   };
 
   const updateTicketCount = (tickets) => {
@@ -123,7 +140,6 @@ function Admin() {
     console.log(selectedCurrTicket);
   };
 
-  
   //  4. Call the api with the new updated data
   const updateTicket = (e) => {
     e.preventDefault();
@@ -136,7 +152,7 @@ function Admin() {
         fetchTickets();
       })
       .catch(function (error) {
-        console.log(error);
+        setMessage(error.response.data.message);
       });
   };
 
@@ -192,6 +208,11 @@ function Admin() {
           bgColor="bg-secondary"
           textColor="text-secondary"
         />
+
+      {/* error message for material table */}
+      </div>
+       <div className="text-center">
+        <h5 className="text-info">{message}</h5>
       </div>
 
       {/* Material table container */}
@@ -228,7 +249,6 @@ function Admin() {
           }}
         />
 
-        <button onClick={openTicketUpdationModal}>Ticket update</button>
         {ticketUpdationModal ? (
           <Modal
             show={ticketUpdationModal}
@@ -342,7 +362,66 @@ function Admin() {
             </Modal.Body>
           </Modal>
         ) : null}
+
+        {userUpdationModal ? (
+          <Modal
+            show={userUpdationModal}
+            onHide={closeTicketUpdationModal}
+            backdrop="static"
+            centered>
+            <Modal.Header closeButton>
+              <Modal.Title>Update USER DETAILS</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {/* submit the details and we will call the api  */}
+              <form 
+              // onSubmit={updateUser}
+              >
+                <div className="p-1">
+                  <h5 className="card-subtitle mb-2 text-danger">User ID :  </h5>
+                </div>
+                <div className="input-group mb-2">
+                  {/* If equal labels needed , set height and width for labelSize */}
+                  <label className='label input-group-text label-md labelSize'>Name</label>
+                  <input type="text" disabled className='form-control' />
+                </div>
+
+                <div className="input-group mb-2">
+                  <label className='label input-group-text label-md'>Email</label>
+                  <input type="text" disabled  className='form-control' />
+                </div>
+                <div className="input-group mb-2">
+                  <label className='label input-group-text label-md'>Role</label>
+                  <input type="text" disabled  className='form-control' />
+
+                </div>
+                {/* Onchange : grabbing the new updates value from UI  */}
+
+                <div className="input-group mb-2">
+                  <label className='label input-group-text label-md'>Status</label>
+                  <select className='form-select' name="status" value={selectedCurrTicket.status}  
+                  // onChange={onUserUpdate}
+                  >
+                    <option value="APPROVED">APPROVED</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="REJECTED">REJECTED</option>
+
+                  </select>
+                </div>
+
+
+                <div className="d-flex justify-content-end">
+                  <Button variant='secondary' className="m-1" onClick={() => closeTicketUpdationModal}>Cancel</Button>
+                  <Button variant='danger' className="m-1" type="submit">Update</Button>
+
+                </div>
+              </form>
+            </Modal.Body>
+          </Modal>
+        ) : null}
         <hr />
+
+
         <MaterialTable
           title="USER DETAILS"
           columns={userColumns}
@@ -370,6 +449,7 @@ function Admin() {
           }}
         />
       </div>
+      <button className="btn btn-danger m-1" onClick={()=> setUserUpdationModal(true)}>Update user details</button>
     </div>
   );
 }

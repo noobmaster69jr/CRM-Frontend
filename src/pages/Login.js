@@ -1,17 +1,14 @@
 import { useState } from "react";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 import { userSignin, userSignup } from "../api/auth";
-
+import {useNavigate} from 'react-router-dom'
 
 // signup : userid, username, email, password
 // login: userid, password
 
 
-/*
-POST API 
-1. Grab the data 
-2. Store the data 
-3. Call the api */
+
+
 
 function Login() {
   const [showSignup, setShowSignup] = useState(false);
@@ -20,7 +17,9 @@ function Login() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+const [message, setMessage] = useState("");
 
+const navigate = useNavigate();
 
   const updateData = (e)=>{
     if(e.target.id === "userid"){
@@ -59,17 +58,16 @@ function Login() {
       localStorage.setItem("token", response.data.accessToken);
       
       if (response.data.userTypes === "CUSTOMER")
-        window.location.href = "/customer";
+        navigate('/customer')
       else if (response.data.userTypes === "ENGINEER")
-        window.location.href = "/engineer";
+        navigate("/engineer");
       else if (response.data.userTypes === "ADMIN")
-        window.location.href = "/admin";
-      else window.location.href = "/";
-
-    
-     
-    }).catch ((err) => {
-      console.log(err)
+        navigate("/admin")
+      else navigate("/")
+ 
+    }).catch ((error) => {
+         console.log(error);
+         setMessage(error.response.data.message);
     })
 
   }
@@ -167,11 +165,13 @@ function Login() {
             />
           </div>
 
-          <div className="m-1 text-center text-primary" onClick={toggleSignup}>
+          <div className="m-1 text-center text-primary clickable" onClick={toggleSignup}>
             {showSignup
               ? "Already have an account? Login"
               : "Don't have an account? Sign Up"}
           </div>
+
+          <div className="text-center text-danger">{message}</div>
         </form>
       </div>
     </div>
