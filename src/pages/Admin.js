@@ -1,3 +1,4 @@
+import Widget from '../components/Widget'
 import MaterialTable from "@material-table/core";
 import Sidebar from "../components/Sidebar";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
@@ -32,6 +33,7 @@ function Admin() {
   return (
     <div className="bg-light vh-100">
       <Sidebar />
+
       {/* welcome text container */}
       <div className="container">
         <h2 className="text text-center text-danger">Welcome Admin!</h2>
@@ -40,116 +42,44 @@ function Admin() {
         </p>
       </div>
       {/* Widgets container */}
-
       <div className="row ms-5 ps-5 mb-5">
         {/* w1 */}
-        <div className="col-xs-12 col-lg-3 col-md-6">
-          <div
-            className="card shadow bg-primary bg-opacity-25 text-center"
-            style={{ width: 15 + "rem" }}
-          >
-            <h5 className="card-subtitle my-2 fw-bolder text-primary">
-              <i className="bi bi-envelope-open text-primary mx-2"></i>Open
-            </h5>
-            <hr />
-            <div className="row mb-2 d-flex align-items-center">
-              <div className="col text-primary mx-4 fw-bolder display-6">8</div>
-              <div className="col">
-                <div style={{ width: 40, height: 40 }}>
-                  <CircularProgressbar
-                    value={8}
-                    styles={buildStyles({
-                      pathColor: "darkblue",
-                    })}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Widget
+          widget="Open"
+          tickets={8}
+          icon="bi-envelope-open"
+          progressBarColor="darkBlue"
+          bgColor="bg-primary"
+          textColor="text-primary"
+        />
         {/* w2 */}
-        <div className="col-xs-12 col-lg-3 col-md-6">
-          <div
-            className="card shadow bg-warning bg-opacity-25 text-center"
-            style={{ width: 15 + "rem" }}
-          >
-            <h5 className="card-subtitle my-2 fw-bolder text-warning">
-              <i className="bi bi-hourglass-split text-warning  mx-2"></i>
-              Progress
-            </h5>
-            <hr />
-            <div className="row mb-2 d-flex align-items-center">
-              <div className="col text-warning mx-4 fw-bolder display-6">
-                20
-              </div>
-              <div className="col">
-                <div style={{ width: 40, height: 40 }}>
-                  <CircularProgressbar
-                    value={8}
-                    styles={buildStyles({
-                      pathColor: "darkgoldenrod",
-                    })}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Widget
+          widget="Progress"
+          tickets={19}
+          icon="bi-hourglass-split"
+          progressBarColor="darkgoldenrod"
+          bgColor="bg-warning"
+          textColor="text-warning"
+        />
         {/* w3*/}
-        <div className="col-xs-12 col-lg-3 col-md-6">
-          <div
-            className="card shadow bg-success bg-opacity-25 text-center"
-            style={{ width: 15 + "rem" }}
-          >
-            <h5 className="card-subtitle my-2 text-success">
-              <i className="bi bi-check2-circle text-success mx-2"></i>Closed
-            </h5>
-            <hr />
-            <div className="row mb-2 d-flex align-items-center">
-              <div className="col text-success mx-4 fw-bolder display-6">
-                78
-              </div>
-              <div className="col">
-                <div style={{ width: 40, height: 40 }}>
-                  <CircularProgressbar
-                    value={8}
-                    styles={buildStyles({
-                      pathColor: "darkgreen",
-                    })}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <Widget
+          widget="Closed"
+          tickets={45}
+          icon="bi-check2-circle"
+          progressBarColor="darkGreen"
+          bgColor="bg-success"
+          textColor="text-success"
+        />
         {/* w4 */}
-        <div className="col-xs-12 col-lg-3 col-md-6">
-          <div
-            className="card shadow bg-secondary bg-opacity-25 text-center"
-            style={{ width: 15 + "rem" }}
-          >
-            <h5 className="card-subtitle my-2 text-secondary">
-              <i className="bi bi-slash-circle text-secondary mx-2"></i>Blocked
-            </h5>
-            <hr />
-            <div className="row mb-2 d-flex align-items-center">
-              <div className="col text-secondary mx-4 fw-bolder display-6">
-                50
-              </div>
-              <div className="col">
-                <div style={{ width: 40, height: 40 }}>
-                  <CircularProgressbar
-                    value={80}
-                    styles={buildStyles({
-                      pathColor: "darkgrey",
-                    })}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
+        <Widget
+          widget="Blocked"
+          tickets={20}
+          icon="bi-slash-circle"
+          progressBarColor="darkGrey"
+          bgColor="bg-secondary"
+          textColor="text-secondary"
+        />
       </div>
 
       {/* Material table container */}
