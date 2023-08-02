@@ -1,24 +1,28 @@
-import Widget from '../components/Widget'
+import { useState, useEffect } from "react";
+import Widget from "../components/Widget";
 import MaterialTable from "@material-table/core";
 import Sidebar from "../components/Sidebar";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import ExportCsv from "@material-table/exporters/csv";
 import ExportPdf from "@material-table/exporters/pdf";
+import { fetchTicket } from "../api/tickets";
 
 const columns = [
   { title: "ID", field: "id" },
   { title: "TITLE", field: "title" },
   { title: "DESCRIPTION", field: "description" },
-  { title: "REPORTER", field: "title" },
-  {title: "ASSIGNEE", field: "assignee"},
-  { title: "PRIORITY", field: "title" },
-  { title:"STATUS", field:"status", lookup:{
-    "OPEN":"OPEN",
-    "IN_PROGRESS":"IN_PROGRESS",
-    "CLOSED":"CLOSED",
-    "BLOCKED":"BLOCKED"
-
-  }}
+  { title: "REPORTER", field: "reporter" },
+  { title: "ASSIGNEE", field: "assignee" },
+  { title: "PRIORITY", field: "ticketPriority" },
+  {
+    title: "STATUS",
+    field: "status",
+    lookup: {
+      OPEN: "OPEN",
+      IN_PROGRESS: "IN_PROGRESS",
+      CLOSED: "CLOSED",
+      BLOCKED: "BLOCKED",
+    },
+  },
 ];
 
 const userColumns = [
@@ -29,14 +33,63 @@ const userColumns = [
   { title: "STATUS", field: "status" },
 ];
 
+
+  
 function Admin() {
+const [ticketDetails, setTicketDetails] = useState([]);
+const [ticketStatusCount, setTicketStatusCount] = useState({});
+  
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  const fetchTickets = () => {
+    fetchTicket()
+      .then((response) => {
+        setTicketDetails(response.data);
+        updateTicketCount(response.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const updateTicketCount = (tickets) => {
+    // filling this empty object with the ticket counts
+    // Segrating the tickets in 4 properties according to the status of the tickets
+    const data = {
+      open: 0,
+      closed: 0,
+      progress: 0,
+      blocked: 0,
+    };
+
+    tickets.forEach((x) => {
+      if (x.status === "OPEN") {
+        data.open += 1;
+      } else if (x.status === "CLOSED") {
+        data.closed += 1;
+      } else if (x.status === "IN_PROGRESS") {
+        data.progress += 1;
+      } else {
+        data.blocked += 1;
+      }
+    });
+
+    setTicketStatusCount(Object.assign({}, data));
+  };
+
+  console.log("***", ticketStatusCount);
+
+
+
   return (
     <div className="bg-light vh-100">
       <Sidebar />
 
       {/* welcome text container */}
       <div className="container">
-        <h2 className="text text-center text-danger">Welcome Admin!</h2>
+        <h2 className="text text-center text-danger">
+          Welcome {localStorage.getItem("name")}
+        </h2>
         <p className="text-muted lead  text-center">
           Take a quick look at your admin stats below
         </p>
@@ -46,16 +99,16 @@ function Admin() {
         {/* w1 */}
         <Widget
           widget="Open"
-          tickets={8}
+          tickets={ticketStatusCount.open}
           icon="bi-envelope-open"
-          progressBarColor="darkBlue"
+          progressBarColor="dark"
           bgColor="bg-primary"
           textColor="text-primary"
         />
         {/* w2 */}
         <Widget
           widget="Progress"
-          tickets={19}
+          tickets={ticketStatusCount.progress}
           icon="bi-hourglass-split"
           progressBarColor="darkgoldenrod"
           bgColor="bg-warning"
@@ -64,7 +117,7 @@ function Admin() {
         {/* w3*/}
         <Widget
           widget="Closed"
-          tickets={45}
+          tickets={ticketStatusCount.closed}
           icon="bi-check2-circle"
           progressBarColor="darkGreen"
           bgColor="bg-success"
@@ -74,7 +127,7 @@ function Admin() {
 
         <Widget
           widget="Blocked"
-          tickets={20}
+          tickets={ticketStatusCount.blocked}
           icon="bi-slash-circle"
           progressBarColor="darkGrey"
           bgColor="bg-secondary"
@@ -87,6 +140,7 @@ function Admin() {
         <MaterialTable
           title="TICKET"
           columns={columns}
+          data={ticketDetails}
           options={{
             filtering: true,
             headerStyle: {

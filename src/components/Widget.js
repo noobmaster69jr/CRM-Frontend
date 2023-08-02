@@ -3,7 +3,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 const Widget = ({widget, icon,  tickets, progressBarColor, bgColor, textColor}) => {
   return (
     <>
-      <div className="col-xs-12 col-lg-3 col-md-6">
+      <div className="col-xs-12 col-lg-3 col-md-6 my-1">
         <div
           className={`card shadow ${bgColor} bg-opacity-25 text-center`}
           style={{ width: 15 + "rem" }}
@@ -19,7 +19,7 @@ const Widget = ({widget, icon,  tickets, progressBarColor, bgColor, textColor}) 
                 <CircularProgressbar
                   value={tickets}
                   styles={buildStyles({
-                    pathColor: {progressBarColor},
+                    pathColor: progressBarColor,
                   })}
                 />
               </div>
