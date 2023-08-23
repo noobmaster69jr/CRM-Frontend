@@ -175,7 +175,7 @@ function Engineer() {
             bgColor="warning"
             widget="PROGRESS"
             icon="hourglass-split"
-            tickets={ticketStatusCount.progress}
+            tickets={ticketStatusCount.pending}
             progressBarColor="yellow"
             textColor="warning"
           />

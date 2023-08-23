@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 
 import MaterialTable from "@material-table/core";
 import ExportCsv from "@material-table/exporters/csv";
 import ExportPdf from "@material-table/exporters/pdf";
 import { Modal, Button } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Widget from "../components/Widget";
-
+import { ticketCreation, fetchTicket } from "../api/tickets";
 const columns = [
   {
     title: "ID",
@@ -42,13 +42,102 @@ const columns = [
 ];
 
 function Customer() {
+  // open create a new ticket modal
   const [createTicketModal, setCreateTicketModal] = useState(false);
+  // success/error message from api
+  const [message, setMessage] = useState("");
+  // store ticket details
+  const [ticketDetails, setTicketDetails] = useState([]);
+  // ticket count for widgets
+  const [ticketStatusCount, setTicketStatusCount] = useState({});
+
+  // logout if error = 401
+  const navigate = useNavigate();
+  const logoutFn = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
+  // GET all tickets raised
+  useEffect(() => {
+    (async () => {
+      fetchTickets();
+    })();
+  }, []);
+
+  const fetchTickets = () => {
+    fetchTicket()
+      .then(function (response) {
+        setTicketDetails(response.data);
+        updateTicketCount(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  console.log(ticketStatusCount);
+
+  // POST API : grab the data from input box and send the data for post api
+  const createTicket = (e) => {
+    e.preventDefault();
+
+    const data = {
+      title: e.target.title.value,
+      description: e.target.description.value,
+    };
+
+    ticketCreation(data)
+      .then(function (response) {
+        setMessage("Ticket Created Successfully!");
+        setCreateTicketModal(false);
+        fetchTickets();
+      })
+      .catch(function (error) {
+        if (error.response.status === 400) {
+          setMessage(error.response.data.message);
+          console.log(error);
+        } else if (error.response.status === 401) {
+          logoutFn();
+        } else {
+          console.log(error);
+        }
+      });
+  };
+
+  // ticket count for widgets
+  const updateTicketCount = (tickets) => {
+    // filling this empty object with the ticket counts
+    // Segrating the tickets in 4 properties according to the status of the tickets
+    const data = {
+      open: 0,
+      closed: 0,
+      progress: 0,
+      blocked: 0,
+    };
+
+    tickets.forEach((x) => {
+      if (x.status === "OPEN") {
+        data.open += 1;
+      } else if (x.status === "CLOSED") {
+        data.closed += 1;
+      } else if (x.status === "IN_PROGRESS") {
+        data.progress += 1;
+      } else {
+        data.blocked += 1;
+      }
+    });
+
+    setTicketStatusCount(Object.assign({}, data));
+  };
 
   return (
     <div className="bg-light vh-100">
       <Sidebar />
       <div className="container pt-5">
-        <h3 className="text-center text-success">Welcome, Customer!</h3>
+        <h3 className="text-center text-success">
+          Welcome, {localStorage.getItem("name")}!
+        </h3>
         <p className="text-center text-muted">
           Take a look at all your tickets below!
         </p>
@@ -58,7 +147,7 @@ function Customer() {
             bgColor="primary"
             widget="OPEN"
             icon="envelope-open"
-            tickets={8}
+            tickets={ticketStatusCount.open}
             progressBarColor="darkblue"
             textColor="primary"
           />
@@ -66,7 +155,7 @@ function Customer() {
             bgColor="warning"
             widget="PROGRESS"
             icon="hourglass-split"
-            tickets={2}
+            tickets={ticketStatusCount.pending}
             progressBarColor="darkyellow"
             textColor="warning"
           />
@@ -74,7 +163,7 @@ function Customer() {
             bgColor="success"
             widget="CLOSED"
             icon="check2-circle"
-            tickets={82}
+            tickets={ticketStatusCount.closed}
             progressBarColor="darkolivegreen"
             textColor="success"
           />
@@ -82,7 +171,7 @@ function Customer() {
             bgColor="secondary"
             widget="BLOCKED"
             icon="slash-circle"
-            tickets={2}
+            tickets={ticketStatusCount.blocked}
             progressBarColor="darkgrey"
           />
         </div>
@@ -90,6 +179,7 @@ function Customer() {
         <MaterialTable
           title="TICKETS RAISED BY YOU"
           columns={columns}
+          data={ticketDetails}
           options={{
             filtering: true,
             headerStyle: {
@@ -114,7 +204,9 @@ function Customer() {
           }}
         />
         <hr />
+        <p className="lead text-primary text-center">{message}</p>
         <h4 className="text-center ">Facing any issues? Raise a ticket!</h4>
+
         <button
           className="btn btn-lg btn-success form-control"
           onClick={() => setCreateTicketModal(true)}
@@ -131,12 +223,17 @@ function Customer() {
           >
             <Modal.Header closeButton>Create a new Ticket</Modal.Header>
             <Modal.Body>
-              <form>
+              <form onSubmit={createTicket}>
                 <div className="input-group m-1">
                   <label className="label label-md input-group-text">
                     TITLE
                   </label>
-                  <input type="text" className="form-control" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="title"
+                    required
+                  />
                 </div>
                 <div className="input-group m-1">
                   <label className="label label-md input-group-text">
@@ -158,7 +255,7 @@ function Customer() {
                   >
                     Cancel
                   </Button>
-                  <Button variant="success" className="m-1" type="submit">
+                  <Button className="m-1" type="submit">
                     Create
                   </Button>
                 </div>

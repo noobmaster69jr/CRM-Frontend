@@ -183,7 +183,7 @@ function Admin() {
         {/* w2 */}
         <Widget
           widget="Progress"
-          tickets={ticketStatusCount.progress}
+          tickets={ticketStatusCount.pending}
           icon="bi-hourglass-split"
           progressBarColor="darkgoldenrod"
           bgColor="bg-warning"
