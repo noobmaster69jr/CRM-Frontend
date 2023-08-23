@@ -41,9 +41,9 @@ function App() {
           <Route path="/engineer" element={<Engineer />} />
         </Route>
 
-        {/* <Route element={<RequireAuth allowedRoles={[ROLES.CUSTOMER]} />}> */}
+        <Route element={<RequireAuth allowedRoles={[ROLES.CUSTOMER]} />}>
           <Route path="/customer" element={<Customer />} />
-        {/* </Route> */}
+        </Route>
         <Route path="/*" element={<NotFound />} />
         <Route path="/unauthorized" element={<Unauth />} />
       </Routes>

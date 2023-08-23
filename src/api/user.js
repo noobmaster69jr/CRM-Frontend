@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:3002";
+const BASE_URL = "https://crm-backend-hzhm.onrender.com";
 export async function getAllUser(userId) {
   return await axios.get(
     `${BASE_URL}/crm/api/users/${userId}`,
