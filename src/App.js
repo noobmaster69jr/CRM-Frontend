@@ -37,9 +37,9 @@ function App() {
           <Route path="/admin" element={<Admin />} />
         </Route>
 
-        <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}>
+        {/* <Route element={<RequireAuth allowedRoles={[ROLES.ENGINEER]} />}> */}
           <Route path="/engineer" element={<Engineer />} />
-        </Route>
+        {/* </Route> */}
 
         <Route element={<RequireAuth allowedRoles={[ROLES.CUSTOMER]} />}>
           <Route path="/customer" element={<Customer />} />
