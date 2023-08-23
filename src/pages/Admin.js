@@ -59,21 +59,29 @@ function Admin() {
   const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
 
   // get api and stor the data
+
+  // eslint-disable-next-line
   const [userDetails, setUserDetails] = useState([]);
   // open and close user modal
+
+  // eslint-disable-next-line
   const [userUpdationModal, setUserUpdationModal] = useState(false);
   // store the curr user details and the updated user details
+
+  // eslint-disable-next-line
   const [selectedCurrUser, setSelectedCurrUser] = useState({});
 
   const [message, setMessage] = useState("");
 
   const updateSelectedCurrTicket = (data) => setSelectedCurrTicket(data);
 
+  // eslint-disable-next-line
   const openTicketUpdationModal = () => setTicketUpdationModal(true);
   const closeTicketUpdationModal = () => setTicketUpdationModal(false);
 
   useEffect(() => {
     fetchTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchTickets = () => {
@@ -209,9 +217,9 @@ function Admin() {
           textColor="text-secondary"
         />
 
-      {/* error message for material table */}
+        {/* error message for material table */}
       </div>
-       <div className="text-center">
+      <div className="text-center">
         <h5 className="text-info">{message}</h5>
       </div>
 
@@ -368,59 +376,74 @@ function Admin() {
             show={userUpdationModal}
             onHide={closeTicketUpdationModal}
             backdrop="static"
-            centered>
+            centered
+          >
             <Modal.Header closeButton>
               <Modal.Title>Update USER DETAILS</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {/* submit the details and we will call the api  */}
-              <form 
+              <form
               // onSubmit={updateUser}
               >
                 <div className="p-1">
-                  <h5 className="card-subtitle mb-2 text-danger">User ID :  </h5>
+                  <h5 className="card-subtitle mb-2 text-danger">User ID : </h5>
                 </div>
                 <div className="input-group mb-2">
                   {/* If equal labels needed , set height and width for labelSize */}
-                  <label className='label input-group-text label-md labelSize'>Name</label>
-                  <input type="text" disabled className='form-control' />
+                  <label className="label input-group-text label-md labelSize">
+                    Name
+                  </label>
+                  <input type="text" disabled className="form-control" />
                 </div>
 
                 <div className="input-group mb-2">
-                  <label className='label input-group-text label-md'>Email</label>
-                  <input type="text" disabled  className='form-control' />
+                  <label className="label input-group-text label-md">
+                    Email
+                  </label>
+                  <input type="text" disabled className="form-control" />
                 </div>
                 <div className="input-group mb-2">
-                  <label className='label input-group-text label-md'>Role</label>
-                  <input type="text" disabled  className='form-control' />
-
+                  <label className="label input-group-text label-md">
+                    Role
+                  </label>
+                  <input type="text" disabled className="form-control" />
                 </div>
                 {/* Onchange : grabbing the new updates value from UI  */}
 
                 <div className="input-group mb-2">
-                  <label className='label input-group-text label-md'>Status</label>
-                  <select className='form-select' name="status" value={selectedCurrTicket.status}  
-                  // onChange={onUserUpdate}
+                  <label className="label input-group-text label-md">
+                    Status
+                  </label>
+                  <select
+                    className="form-select"
+                    name="status"
+                    value={selectedCurrTicket.status}
+                    // onChange={onUserUpdate}
                   >
                     <option value="APPROVED">APPROVED</option>
                     <option value="PENDING">PENDING</option>
                     <option value="REJECTED">REJECTED</option>
-
                   </select>
                 </div>
 
-
                 <div className="d-flex justify-content-end">
-                  <Button variant='secondary' className="m-1" onClick={() => closeTicketUpdationModal}>Cancel</Button>
-                  <Button variant='danger' className="m-1" type="submit">Update</Button>
-
+                  <Button
+                    variant="secondary"
+                    className="m-1"
+                    onClick={() => closeTicketUpdationModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="danger" className="m-1" type="submit">
+                    Update
+                  </Button>
                 </div>
               </form>
             </Modal.Body>
           </Modal>
         ) : null}
         <hr />
-
 
         <MaterialTable
           title="USER DETAILS"
@@ -449,7 +472,12 @@ function Admin() {
           }}
         />
       </div>
-      <button className="btn btn-danger m-1" onClick={()=> setUserUpdationModal(true)}>Update user details</button>
+      <button
+        className="btn btn-danger m-1"
+        onClick={() => setUserUpdationModal(true)}
+      >
+        Update user details
+      </button>
     </div>
   );
 }

@@ -73,6 +73,7 @@ function Engineer() {
     (async () => {
       fetchTickets();
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // get all tickets list
   const fetchTickets = () => {
@@ -133,7 +134,6 @@ function Engineer() {
     updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
   };
 
-  console.log(selectedCurrTicket);
 
   // fetch put  api with updated details
   const updateTicket = (e) => {

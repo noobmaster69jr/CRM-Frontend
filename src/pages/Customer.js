@@ -7,7 +7,18 @@ import { Modal, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Widget from "../components/Widget";
-import { ticketCreation, fetchTicket } from "../api/tickets";
+import { ticketCreation, fetchTicket, ticketUpdation } from "../api/tickets";
+
+
+// put logic
+/*
+1. Grab the curr ticket : ticket id , all the curr data along with it 
+2. Store the curr Ticket in a state -> display the curr ticket details in the modal 
+3. Grab the new updated values and store in a state
+4. Fetch the api with the new updated data 
+*/
+
+
 const columns = [
   {
     title: "ID",
@@ -23,7 +34,7 @@ const columns = [
   },
   {
     title: "ASIGNEE",
-    field: "asignee",
+    field: "assignee",
   },
   {
     title: "PRIORITY",
@@ -51,6 +62,13 @@ function Customer() {
   // ticket count for widgets
   const [ticketStatusCount, setTicketStatusCount] = useState({});
 
+  // store the curr ticket
+  const [selectedCurrTicket, setSelectedCurrTicket] = useState({});
+  // open the edit ticket modal
+  const [ticketUpdationModal, setTicketUpdationModal] = useState(false);
+  // updated data stored in a state
+  const updateSelectedCurrTicket = (data) => setSelectedCurrTicket(data);
+
   // logout if error = 401
   const navigate = useNavigate();
   const logoutFn = () => {
@@ -63,6 +81,7 @@ function Customer() {
     (async () => {
       fetchTickets();
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchTickets = () => {
@@ -72,11 +91,9 @@ function Customer() {
         updateTicketCount(response.data);
       })
       .catch(function (error) {
-        console.log(error);
+        setMessage(error.response.data.message);
       });
   };
-
-  console.log(ticketStatusCount);
 
   // POST API : grab the data from input box and send the data for post api
   const createTicket = (e) => {
@@ -96,12 +113,52 @@ function Customer() {
       .catch(function (error) {
         if (error.response.status === 400) {
           setMessage(error.response.data.message);
-          console.log(error);
         } else if (error.response.status === 401) {
           logoutFn();
         } else {
           console.log(error);
         }
+      });
+  };
+
+  // PUT API : 2. Store the data
+
+  const editTicket = (ticketDetail) => {
+    const ticket = {
+      id: ticketDetail.id,
+      title: ticketDetail.title,
+      description: ticketDetail.description,
+      assignee: ticketDetail.assignee,
+      reporter: ticketDetail.reporter,
+      priority: ticketDetail.ticketPriority,
+      status: ticketDetail.status,
+    };
+
+    setSelectedCurrTicket(ticket);
+    setTicketUpdationModal(true);
+  };
+
+  // 3. grab the new data
+
+  const onTicketUpdate = (e) => {
+    if (e.target.name === "description")
+      selectedCurrTicket.description = e.target.value;
+    else if (e.target.name === "status")
+      selectedCurrTicket.status = e.target.value;
+    updateSelectedCurrTicket(Object.assign({}, selectedCurrTicket));
+  };
+
+  // 4. fetch the put api
+  const updateTicket = (e) => {
+    e.preventDefault();
+    ticketUpdation(selectedCurrTicket.id, selectedCurrTicket)
+      .then(function (response) {
+        console.log(" Ticket Updated successfully!");
+        setTicketUpdationModal(false);
+        fetchTickets();
+      })
+      .catch(function (error) {
+        console.log(error);
       });
   };
 
@@ -155,7 +212,7 @@ function Customer() {
             bgColor="warning"
             widget="PROGRESS"
             icon="hourglass-split"
-            tickets={ticketStatusCount.pending}
+            tickets={ticketStatusCount.progress}
             progressBarColor="darkyellow"
             textColor="warning"
           />
@@ -178,6 +235,7 @@ function Customer() {
         <hr />
         <MaterialTable
           title="TICKETS RAISED BY YOU"
+          onRowClick={(event, rowData) => editTicket(rowData)}
           columns={columns}
           data={ticketDetails}
           options={{
@@ -255,8 +313,102 @@ function Customer() {
                   >
                     Cancel
                   </Button>
-                  <Button className="m-1" type="submit">
+                  <Button className="m-1" type="submit" variant="success">
                     Create
+                  </Button>
+                </div>
+              </form>
+            </Modal.Body>
+          </Modal>
+        ) : null}
+        {ticketUpdationModal ? (
+          <Modal
+            show={ticketUpdationModal}
+            backdrop="static"
+            centered
+            onHide={() => setTicketUpdationModal(false)}
+          >
+            <Modal.Header closeButton>Update the Ticket</Modal.Header>
+            <Modal.Body>
+              <form onSubmit={updateTicket}>
+                <h5 className="card-subtitle lead text-success">
+                  ID : {selectedCurrTicket.id}
+                </h5>
+
+                <div className="input-group m-1">
+                  <label className="label label-md input-group-text">
+                    TITLE
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="title"
+                    value={selectedCurrTicket.title}
+                    disabled
+                  />
+                </div>
+                <div className="input-group m-1">
+                  <label className="label label-md input-group-text">
+                    Assignee
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="assignee"
+                    value={selectedCurrTicket.assignee}
+                    disabled
+                  />
+                </div>
+                <div className="input-group m-1">
+                  <label className="label label-md input-group-text">
+                    Priority
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="priority"
+                    value={selectedCurrTicket.priority}
+                    disabled
+                  />
+                </div>
+                <div className="input-group m-1">
+                  <label className="label label-md input-group-text">
+                    DESCRIPTION
+                  </label>
+                  <textarea
+                    type="text"
+                    className=" md-textarea form-control"
+                    rows="3"
+                    name="description"
+                    value={selectedCurrTicket.description}
+                    onChange={onTicketUpdate}
+                  />
+                </div>
+                <div className="input-group m-1">
+                  <label className="label label-md input-group-text">
+                    STATUS
+                  </label>
+                  <select
+                    name="status"
+                    className="form-select"
+                    value={selectedCurrTicket.status}
+                    onChange={onTicketUpdate}
+                  >
+                    <option value="OPEN">OPEN</option>
+                    <option value="CLOSED">CLOSED</option>
+                  </select>
+                </div>
+
+                <div className="d-flex justify-content-end">
+                  <Button
+                    variant="secondary"
+                    className="m-1"
+                    onClick={() => setTicketUpdationModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button className="m-1" type="submit" variant="success">
+                    Update
                   </Button>
                 </div>
               </form>
