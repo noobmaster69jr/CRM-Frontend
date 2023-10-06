@@ -2,7 +2,7 @@ import axios from 'axios'
 const BASE_URL = "https://crm-backend-hzhm.onrender.com";
 
 export const fetchTicket = async (data)=>{
-    return await axios.get(`${BASE_URL}/crm/api/tickets`, 
+    return await axios.get(`${BASE_URL}/crm/api/v1/tickets`, 
     {
         headers:{
             'x-access-token': localStorage.getItem('token')
@@ -17,7 +17,7 @@ export const fetchTicket = async (data)=>{
 // PUT API : passing the id of the ticket and the new updated data 
 
 export async function ticketUpdation(id, selectedCurrTicket) {
-    return await axios.put(`${BASE_URL}/crm/api/tickets/${id}`, selectedCurrTicket, {
+    return await axios.put(`${BASE_URL}/crm/api/v1/tickets/${id}`, selectedCurrTicket, {
         headers: {
             'x-access-token': localStorage.getItem("token")
         }
